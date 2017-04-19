@@ -4,6 +4,8 @@ plugins {
 
 apply plugin: 'java-library'
 apply plugin: 'groovy'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 repositories {
     jcenter()
@@ -25,10 +27,22 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 }
 
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
+            groupId 'nl.unionsoft.commons'
+            artifactId 'commons-properties'
+            version project.version
+        }
+    }
+}
+
+
 bintray {
-    key = System.getenv('BINTRAY_USER')
+    user = System.getenv('BINTRAY_USER')
     key = System.getenv('BINTRAY_KEY')
-    
+    publications = ['MyPublication']
     pkg {
         repo = 'libs-release'
         name = project.name
@@ -36,9 +50,10 @@ bintray {
         vcsUrl = 'https://github.com/UnionSoft/commons-properties.git'
         version {
             name = project.version
-            desc = 'Commons Properties'
+            desc = "Commons Properties ${project.version}"
             released  = new Date()
             vcsTag = project.version
         }
     }
 }
+
